@@ -1,0 +1,11 @@
+aws_region      = "us-east-1"
+bucket_name     = "your-static-website-bucket-name"
+environment     = "prod"
+domain_name     = "yourdomain.com"
+route53_zone_id = "ZXXXXXXXXXXXXXXXXX" # Your Route53 Hosted Zone ID
+terraform_state_bucket = "your-terraform-state-bucket"
+terraform_state_dynamodb_table = "your-terraform-state-lock"
+aws_profile     = "default"
+
+# Optional: Enable IAM policy for static site plugins (SimplyStatic etc.)
+create_static_site_plugin_policy = false

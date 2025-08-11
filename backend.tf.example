@@ -1,0 +1,10 @@
+terraform {
+  backend "s3" {
+    bucket         = "your-terraform-state-bucket"    # Replace with your bucket name
+    key            = "static-site/terraform.tfstate"
+    region         = "us-east-1"                      # Replace with your region
+    encrypt        = true
+    dynamodb_table = "your-terraform-state-lock"      # Replace with your DynamoDB table name
+    profile        = "your-aws-profile"               # Replace with your AWS profile
+  }
+}
