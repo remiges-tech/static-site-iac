@@ -95,6 +95,20 @@ If you want both `example.com` and `www.example.com`, set `domain_name = "exampl
 This module creates infrastructure only. It does not sync a local content directory.
 It keeps the S3 bucket private and serves content through CloudFront.
 
+## Pretty URL rewrite
+
+The CloudFront distribution includes a viewer-request function that rewrites clean
+URL paths to `index.html` inside the matching folder.
+
+This is needed because the site uses a private S3 REST origin behind CloudFront,
+not S3 website hosting. With that setup, CloudFront does not automatically map
+requests like `/product-building/` to `/product-building/index.html`.
+
+The static export now uses clean directory URLs, so the rewrite keeps those URLs
+working without exposing the old WordPress query-style filenames. It also makes
+future exported sites using this module behave the same way without additional
+per-site infrastructure changes.
+
 ### 1. Simply Static or similar publisher
 
 Set:

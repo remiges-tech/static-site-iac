@@ -48,6 +48,18 @@ resource "aws_cloudfront_function" "rewrite_directory_index" {
   comment = "Rewrite clean URLs to index.html for nested static site routes"
   publish = true
   code    = <<-EOT
+    // This rewrite is needed because the site is served from a private S3 REST
+    // origin behind CloudFront, not from S3 website hosting.
+    //
+    // In that setup CloudFront does not automatically resolve a request like:
+    //   /product-building/
+    // to the object:
+    //   /product-building/index.html
+    //
+    // The WordPress export now uses clean directory URLs, so we need to map
+    // folder-style requests back to the real index.html file in each folder.
+    // This keeps the exported site readable, preserves pretty URLs, and avoids
+    // exposing the old WordPress query-string filenames in the browser.
     function handler(event) {
       var request = event.request;
       var uri = request.uri;
