@@ -3,11 +3,6 @@ resource "aws_cloudfront_response_headers_policy" "security_headers" {
   comment = "A policy that adds baseline security headers for improved security of the static site."
 
   security_headers_config {
-    content_security_policy {
-      content_security_policy = "default-src 'self';"
-      override                = true
-    }
-
     content_type_options {
       override = true
     }
