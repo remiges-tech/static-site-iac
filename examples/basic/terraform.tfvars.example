@@ -1,0 +1,18 @@
+aws_region  = "us-west-2"
+aws_profile = "default"
+
+bucket_name              = "your-static-site-bucket"
+environment              = "prod"
+domain_name              = "example.com"
+subject_alternative_names = ["www.example.com"]
+
+# Set to false when DNS is managed outside Route53.
+manage_dns_in_route53 = true
+route53_zone_id       = "ZXXXXXXXXXXXXXXXXX"
+
+# In external DNS mode, leave this empty for the first apply.
+# After creating the validation records with your DNS provider,
+# set this to the record FQDNs and apply again.
+external_dns_validation_record_fqdns = []
+
+create_static_site_plugin_policy = false

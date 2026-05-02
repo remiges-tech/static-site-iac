@@ -1,5 +1,6 @@
 resource "aws_iam_policy" "static_site_plugin" {
-  count = var.create_static_site_plugin_policy ? 1 : 0
+  # Wait until CloudFront exists so the policy can include the distribution ARN.
+  count = var.create_static_site_plugin_policy && local.cloudfront_enabled ? 1 : 0
 
   name        = "static-site-plugin-${var.environment}"
   description = "Policy for static site plugins to manage S3 content and CloudFront invalidation"
@@ -27,7 +28,7 @@ resource "aws_iam_policy" "static_site_plugin" {
           "cloudfront:GetInvalidation",
           "cloudfront:ListInvalidations"
         ]
-        Resource = aws_cloudfront_distribution.website.arn
+        Resource = aws_cloudfront_distribution.website[0].arn
       }
     ]
   })
@@ -35,9 +36,4 @@ resource "aws_iam_policy" "static_site_plugin" {
   tags = {
     Environment = var.environment
   }
-}
-
-output "static_site_plugin_policy_arn" {
-  description = "ARN of the static site plugin IAM policy (if created)"
-  value       = var.create_static_site_plugin_policy ? aws_iam_policy.static_site_plugin[0].arn : null
 }
