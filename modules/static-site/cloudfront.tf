@@ -41,6 +41,28 @@ resource "aws_cloudfront_origin_access_control" "website" {
   signing_protocol                  = "sigv4"
 }
 
+resource "aws_cloudfront_function" "rewrite_directory_index" {
+  count   = local.cloudfront_enabled ? 1 : 0
+  name    = "tf-rewrite-directory-index-${var.bucket_name}"
+  runtime = "cloudfront-js-1.0"
+  comment = "Rewrite clean URLs to index.html for nested static site routes"
+  publish = true
+  code    = <<-EOT
+    function handler(event) {
+      var request = event.request;
+      var uri = request.uri;
+
+      if (uri.endsWith('/')) {
+        request.uri += 'index.html';
+      } else if (!uri.includes('.')) {
+        request.uri += '/index.html';
+      }
+
+      return request;
+    }
+  EOT
+}
+
 # Create CloudFront only after certificate validation is available for the current mode.
 resource "aws_cloudfront_distribution" "website" {
   count = local.cloudfront_enabled ? 1 : 0
@@ -82,6 +104,11 @@ resource "aws_cloudfront_distribution" "website" {
     max_ttl     = 86400
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.rewrite_directory_index[0].arn
+    }
   }
 
   restrictions {
